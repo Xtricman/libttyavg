@@ -16,9 +16,13 @@ class UserNode:
         while True:
             print('>>', end='')
             user_input = input()
-            if user_input == 'exit':
+            if user_input == 'quit':
                 yield Event('QUIT', None)
             elif user_input[0:4] == 'save':
                 yield Event('SAVE', user_input[5:])
-            else:
+            elif user_input == 'back':
+                yield Event('BACK', None)
+            elif user_input in self.options_dict:
                 yield Event('CONTINUE', self.options_dict[user_input])
+            else:
+                continue

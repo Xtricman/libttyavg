@@ -16,4 +16,5 @@ tmp0gaochao.add_option("继续", tmp02)
 tmp02.add_option("继续", tmphappyend)
 tmp11.add_option("继续", tmp12)
 tmp12.add_option("继续", tmpbadend)
+run.__globals__['history'] = []
 run(start)

@@ -1,24 +1,28 @@
 import pickle
 
 class Event:
-    def __init__(self, type, arg):
-        self.type = type
+    def __init__(self, ev_type, arg):
+        self.ev_type = ev_type
         self.arg = arg
 
 def run(node):
+    history.append(node)
     for event in node.display():
-        if event.type == 'SAVE':
-            save(node, event.arg)
-        elif event.type == 'QUIT':
+        if event.ev_type == 'SAVE':
+            with open(event.arg, "wb") as sh:
+                pickle.dump(history, sh)
+        elif event.ev_type == 'QUIT':
             return event.arg
-        elif event.type == 'CONTINUE':
+        elif event.ev_type == 'CONTINUE':
             return run(event.arg)
-
-def save(node, savepath):
-    with open(savepath, "wb") as sf:
-        pickle.dump(node, sf)
+        elif event.ev_type == 'BACK':
+            if len(history) == 1:
+                continue
+            else:
+                history.pop()
+                return run(history.pop())
 
 def load(savefile):
     with open(savefile, "rb") as lf:
-        node=pickle.load(lf)
-    return node
+        history=pickle.load(lf)
+    return history
