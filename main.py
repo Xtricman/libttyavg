@@ -1,44 +1,36 @@
 import ttyavg
-from pickle import loads
-from zipfile import ZipFile
 
-
-def render_and_send_event(node):
+def render_and_get_event(uuid):
+    node = uuid_node_map[uuid]
     print('=====')
     print(node['description_text'])
     print()
+    if not node['options']:
+        return ('QUIT',)
     for k in node['options']:
-        print(k[0])
+        print(k)
     print('=====')
-    while True:
-        print('>>', end='')
-        user_input = input()
-        if user_input == 'quit':
-            yield ttyavg.Event('QUIT')
-        elif user_input[0:4] == 'save':
-            yield ttyavg.Event('SAVE', user_input[5:])
-        elif user_input == 'back':
-            yield ttyavg.Event('BACK')
-        elif int(user_input) in range(0, len(node['options'])):
-            yield ttyavg.Event('CONTINUE', node['options'][int(user_input)][1])
-        else:
-            continue
+    print('>>', end='')
+    user_input = input()
+    if user_input == 'quit':
+        return ('QUIT',)
+    if user_input[0:4] == 'save':
+        return ('SAVE', user_input[5:])
+    if user_input == 'back':
+        return ('BACK',)
+    if int(user_input) in range(0, len(game_map[uuid])):
+        return ('CONTINUE', game_map[uuid][int(user_input)])
 
-
-#def read_node_map():
-    #with ZipFile("GameData.zip","r")  as gamedata:
-        #return {uuid:loads(node_map_data.read(uuid)) for uuid in gamedata.namelist()}
-def read_node_map():
-    return {
-                  0:{'description_text':'游戏开始了', 'options':[('路线1', 1), ('路线2', 2)]},
-                  1:{'description_text':'路线1开端', 'options':[('去发展', 3)]},
-                 3:{'description_text':'路线1发展', 'options':[('去结局', 5)]},
-                 5:{'description_text':'路线1结局', 'options':[]},
-                  2:{'description_text':'路线2开端', 'options':[('去发展', 4)]},
-                 4:{'description_text':'路线2发展', 'options':[('去结局', 6)]},
-                 6:{'description_text':'路线2结局', 'options':[]}
+uuid_node_map = {
+                 0:{'description_text':'游戏开始了', 'options':['路线1', '路线2']},
+                 1:{'description_text':'路线1开端', 'options':['去发展']},
+                 3:{'description_text':'路线1发展', 'options':['去结局']},
+                 5:{'description_text':'路线1结局', 'options':None},
+                 2:{'description_text':'路线2开端', 'options':['去发展']},
+                 4:{'description_text':'路线2发展', 'options':['去结局']},
+                 6:{'description_text':'路线2结局', 'options':None}
                 }
+game_map = {0:[1,2], 1:[3], 3:[5], 2:[4], 4:[6]}
 
-ttyavg.__dict__['read_node_map'] = read_node_map
-ttyavg.__dict__['render_and_send_event'] = render_and_send_event
+ttyavg.render_and_get_event = render_and_get_event
 ttyavg.game_start()
