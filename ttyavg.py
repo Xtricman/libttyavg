@@ -4,11 +4,11 @@ import sys
 
 def game_start():
     if len(sys.argv)==1:
-        uuid = 0
+        start_uuid = 0
         runtime_history = []
     else:
         with open(sys.argv[-1], "rb") as savedgame:
-            uuid, runtime_history = pickle.load(savedgame)
+            start_uuid, runtime_history = pickle.load(savedgame)
 
     def run(uuid):
         runtime_history.append(uuid)
@@ -31,4 +31,4 @@ def game_start():
                 runtime_history.pop()
                 return run(runtime_history.pop())
 
-    run(uuid)
+    run(start_uuid)
